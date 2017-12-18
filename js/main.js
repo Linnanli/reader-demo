@@ -6,7 +6,7 @@
     );
 })(function (window, undefined) {
     'use strict';
-    //工具方法
+    //工具方法 util
     var util = {
         storagePrefix: location.hostname + '_',
         getStorage: function (name) {
