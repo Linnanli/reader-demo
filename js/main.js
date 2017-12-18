@@ -189,6 +189,7 @@
     var readerModel = {
         chapterDir: [],
         curChapterIndx: 1,
+        path:'reader-demo',
         init:function(callback){
             //获取目录
             this.getDir(function (chapterDir) {
@@ -228,7 +229,7 @@
             var _this = this;
             $.ajax({
                 type: 'GET',
-                url: '/data/chapter.json',
+                url: this.path+'/data/chapter.json',
                 success: function (response) {
                     if (response.result == 0) {
                         callback && callback.call(_this, response.chapters);
@@ -241,7 +242,7 @@
             var _this = this;
             $.ajax({
                 type: 'GET',
-                url: '/data/data' + chapterId + '.json',
+                url: this.path+'/data/data' + chapterId + '.json',
                 cache: true,
                 success: function (response) {
                     if (response.result == 0) {
