@@ -171,30 +171,28 @@
             });
             //上一页
             this.prevBut.on('click', function () {
-                _this.loading.show();
                 readerModel.prev({
                     success:function(chapter){
+                        _this.loading.show();
                         $(window).scrollTop(0);
                         _this.generateContent(chapter);
                         _this.loading.hide();
                     },
                     error:function(){
-                        _this.loading.hide();
                         alert('当前已是第一章');
                     }
                 });
             });
             //下一页
             this.nextBut.on('click', function () {
-                _this.loading.show();
                 readerModel.next({
                     success:function(chapter){
+                        _this.loading.show();
                         $(window).scrollTop(0);
                         _this.generateContent(chapter);
                         _this.loading.hide();
                     },
                     error:function(){
-                        _this.loading.hide();
                         alert('已到最后一章');
                     }
                 });
