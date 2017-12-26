@@ -37,6 +37,7 @@
             this.articleMiddle = $('#articleMiddle');
             this.menuBar = $('#menuBar');
             this.fictionBox = $('#fiction_box');
+            this.loading = $('#loading');
             this.container = this.fictionBox.children('.fiction-continer');
             this.butBar = this.fictionBox.children('.but-bar');
             this.prevBut = this.butBar.children('.prev-but');
@@ -170,16 +171,32 @@
             });
             //上一页
             this.prevBut.on('click', function () {
-                readerModel.prev(function(chapter){
-                    $(window).scrollTop(0);
-                    _this.generateContent(chapter);
+                _this.loading.show();
+                readerModel.prev({
+                    success:function(chapter){
+                        $(window).scrollTop(0);
+                        _this.generateContent(chapter);
+                        _this.loading.hide();
+                    },
+                    error:function(){
+                        _this.loading.hide();
+                        alert('当前已是第一章');
+                    }
                 });
             });
             //下一页
             this.nextBut.on('click', function () {
-                readerModel.next(function(chapter){
-                    $(window).scrollTop(0);
-                    _this.generateContent(chapter);
+                _this.loading.show();
+                readerModel.next({
+                    success:function(chapter){
+                        $(window).scrollTop(0);
+                        _this.generateContent(chapter);
+                        _this.loading.hide();
+                    },
+                    error:function(){
+                        _this.loading.hide();
+                        alert('已到最后一章');
+                    }
                 });
             });
         }
@@ -200,26 +217,40 @@
                 });
             });
         },
-        prev:function(callback){
+        prev:function(option){
             var curChapterIndx = this.curChapterIndx - 1;
             var curChapter = this.chapterDir[curChapterIndx];
             if (curChapter) {
                 readerModel.getChapter(curChapter.chapter_id, function (chapter) {
-                    this.curChapterIndx = curChapterIndx;
-                    util.setSession('curChapterIndx', curChapterIndx);
-                    callback&&callback.call(this,chapter);
+                    if(chapter){
+                        this.curChapterIndx = curChapterIndx;
+                        util.setSession('curChapterIndx', curChapterIndx);
+                        if(typeof option.success === 'function')
+                            option.success.call(this,chapter);
+                    }else{
+                        if(typeof option.error === 'function')
+                            option.error.call();
+                    }
+                    
                 });
             }
         },
         //获取下一页数据
-        next:function(callback){
+        next:function(option){
             var curChapterIndx = this.curChapterIndx + 1;
             var curChapter = this.chapterDir[curChapterIndx];
             if (curChapter) {
                 this.getChapter(curChapter.chapter_id, function (chapter) {
-                    this.curChapterIndx = curChapterIndx;
-                    util.setSession('curChapterIndx', curChapterIndx);
-                    callback&&callback.call(this,chapter);
+                    if(chapter){
+                        this.curChapterIndx = curChapterIndx;
+                        util.setSession('curChapterIndx', curChapterIndx);
+                        if(typeof option.success === 'function')
+                            option.success.call(this,chapter);
+                    }else{
+                        if(typeof option.error === 'function')
+                            option.error.call();
+                    }
+                    
                 });
             }
         },
@@ -258,6 +289,9 @@
                         });
                     }
 
+                },
+                error:function(){
+                    callback && callback.call(_this,null);
                 }
             });
         }
@@ -269,6 +303,8 @@
         //初始化章节
         readerModel.init(function(chapter){
             readerUI.generateContent(chapter);
+            //加载完毕,隐藏loading
+            readerUI.loading.hide();
         });
     }
 });
